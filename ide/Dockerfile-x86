@@ -70,7 +70,7 @@ VOLUME /workdir
 WORKDIR /workdir
 
 # workaround for the discovery of java path by VSCode
-RUN bash -l -c 'echo export PATH=/opt/m68k-toolchain/bin:/sgdk/bin:$PATH >> /etc/bash.bashrc'  
+#RUN bash -l -c 'echo export PATH=$PATH:/sgdk/bin >> /etc/bash.bashrc'  
 RUN bash -l -c 'echo export JAVA_HOME=$(update-alternatives --query java | grep "Value: " | sed "s/Value: \(.*\)\/bin\/java/\1/") >> /etc/bash.bashrc'
 ADD settings.json /root/.local/share/code-server/User/settings.json
 
