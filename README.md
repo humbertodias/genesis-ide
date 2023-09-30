@@ -8,12 +8,28 @@ Genesis **I**ntegrated **D**evelopment **E**nvironment with [Visual Studio Code]
 ### How to start
 
 ```shell
-docker compose up
+docker compose up -d
 ```
 Then access
 
-[IDE](http://localhost:9090) | [Gens](http://localhost:9000) | [RetroArch](http://localhost:7070)
+[IDE](http://localhost:8080/?folder=/workdir)
 
+Short cut
+
+F1 > Genesis Code: Compile Project
+F1 > Simple Browser: Show
+
+
+Emulators
+
+[Gens](http://localhost:8081) | [RetroArch](http://localhost:8082)
+
+
+
+### Stopping
+```shell
+docker compose down
+```
 
 ### Roadmap
 

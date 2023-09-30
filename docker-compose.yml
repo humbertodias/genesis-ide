@@ -4,13 +4,12 @@ services:
 
   ide:
     build:
-      dockerfile: Dockerfile.ide
+      context: ide
       args:
         - SGDK_VERSION=1.90
         - JDK_VER=11
     ports:
       - 8080:8080
-      - 9090:9090
     environment:
       - PASSWORD=password #optional
       - SUDO_PASSWORD=password #optional
@@ -20,23 +19,23 @@ services:
 
   gens:
     build:
-      dockerfile: Dockerfile.gens
+      context: gens
     ports:
-      - 9000:9000
+      - 8081:8081
     environment:
+      - PORT=8081
       - ROM_PATH=docs/roms/out/rom.bin
     volumes:
       - shared-volume:/opt/wasm-genplus/docs/roms
 
   retroarch:
     build:
-      context: .
-      dockerfile: Dockerfile.retroarch
+      context: retroarch
       args:
         - RETROARCH_TYPE=stable
         - RETROARCH_VERSION=1.16.0
     ports:
-      - 7070:80
+      - 8082:80
     restart: unless-stopped
     working_dir: /workdir
     volumes:

@@ -28,11 +28,9 @@ ADD fn.sh /
 # VSCode extensions
 ARG EXT_GENESIS_CODE_VERSION=1.4.2
 ARG EXT_C_CPP_RUNNER_VERSION=9.0.0
-ARG EXT_LIVE_PREVIEW_VERSION=0.4.9
 RUN source /fn.sh \
 && install_vscode_extension zerasul genesis-code $EXT_GENESIS_CODE_VERSION \
-&& install_vscode_extension franneck94 c-cpp-runner $EXT_C_CPP_RUNNER_VERSION \
-&& install_vscode_extension ms-vscode live-server $EXT_LIVE_PREVIEW_VERSION
+&& install_vscode_extension franneck94 c-cpp-runner $EXT_C_CPP_RUNNER_VERSION
 
 # SGDK
 
@@ -51,8 +49,7 @@ RUN apt update  \
   openjdk-${JDK_VER}-jre-headless \
   && rm -rf /var/lib/apt/lists/*
 
-# install GCC 6.3
-
+# Install GCC 6.3
 RUN cd /opt \
     && curl -O http://barelyconsciousgames.com/m68k-toolchain-rpi.tar.gz \
     && tar xvzf m68k-toolchain-rpi.tar.gz \
@@ -97,15 +94,13 @@ RUN cd /sgdk/tools/xgmtool \
 VOLUME /workdir
 WORKDIR /workdir
 
-
 # workaround for the discovery of java path by VSCode
 RUN bash -l -c 'echo export PATH=/opt/m68k-toolchain/bin:/sgdk/bin:$PATH >> /etc/bash.bashrc'  
 RUN bash -l -c 'echo export JAVA_HOME=$(update-alternatives --query java | grep "Value: " | sed "s/Value: \(.*\)\/bin\/java/\1/") >> /etc/bash.bashrc'
-ADD settings.json $HOME/.local/share/code-server/User/settings.json
+ADD settings.json /root/.local/share/code-server/User/settings.json
 
 # Non root
 #USER coder
 
-
-EXPOSE 8080 9090
-CMD ["--bind-addr", "0.0.0.0:9090"]
+EXPOSE 8080
+CMD ["--bind-addr", "0.0.0.0:8080", "--auth", "none"]
