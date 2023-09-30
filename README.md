@@ -1,6 +1,6 @@
 # Genesis IDE
 
-Genesis **I**ntegrated **D**evelopment **E**nvironment with VSCode + SGDK + Gens + Retroarch
+Genesis **I**ntegrated **D**evelopment **E**nvironment with [Visual Studio Code](https://code.visualstudio.com), [SGDK](https://github.com/Stephane-D/SGDK), [Gens](http://www.gens.me) and [Retroarch](https://www.retroarch.com)
 
 ### Prerequirement
 * Docker 23+
