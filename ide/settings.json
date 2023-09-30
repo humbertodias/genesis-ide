@@ -1,5 +1,3 @@
 {
-    "zerasul.genesis-code" :{
-        "custom-makefile": "/sgdk/makefile.gen"
-    }
+    "custom-makefile": "/sgdk/makefile.gen"
 }
