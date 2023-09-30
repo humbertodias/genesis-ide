@@ -60,7 +60,7 @@ ENV GDK=/sgdk
 ENV SGDK_DOCKER=y
 
 # Create wrappers to execute .exe files using wine
-RUN /sgdk/bin \ 
+RUN cd /sgdk/bin \ 
 && sed -i 's/\r$//' create-bin-wrappers.sh \  
 && chmod +x create-bin-wrappers.sh \
 && ./create-bin-wrappers.sh
