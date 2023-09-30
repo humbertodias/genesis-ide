@@ -5,6 +5,7 @@ services:
   ide:
     build:
       context: ide
+      # dockerfile: Dockerfile-m1
       args:
         - SGDK_VERSION=1.90
         - JDK_VER=11

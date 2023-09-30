@@ -1,0 +1,82 @@
+FROM codercom/code-server:latest
+# bash as default
+SHELL ["/bin/bash", "-c"]
+ENV TZ=America/Sao_Paulo
+
+# root 
+USER root
+RUN apt update && apt install -y zip unzip curl jq netcat lsof socat npm \
+&& rm -rf /var/lib/apt/lists/* /tmp/*
+
+RUN chown -R coder:coder /opt \
+ && sudo adduser coder sudo \
+ && mkdir /opt/repository
+
+# Fix
+RUN cd /usr/lib/code-server \
+&& rm -rf node_modules/argon2 \
+&& npm install -g node-gyp \
+&& npm install argon2 argon2-cli \
+&& echo -n "password" | npx argon2-cli -d -e
+
+
+# Bash
+RUN echo "alias ll='ls -lha --color'" >> $HOME/.bash_aliases
+
+ADD fn.sh /
+
+# VSCode extensions
+ARG EXT_GENESIS_CODE_VERSION=1.4.2
+ARG EXT_C_CPP_RUNNER_VERSION=9.0.0
+RUN source /fn.sh \
+&& install_vscode_extension zerasul genesis-code $EXT_GENESIS_CODE_VERSION \
+&& install_vscode_extension franneck94 c-cpp-runner $EXT_C_CPP_RUNNER_VERSION
+
+# SGDK
+ARG SGDK_VERSION=1.90
+RUN git clone https://github.com/Stephane-D/SGDK /sgdk \
+&& cd /sgdk \
+&& git checkout tags/v${SGDK_VERSION}
+
+# Set-up argument defaults
+ARG JDK_VER=11
+
+# Install supporting packages
+RUN dpkg --add-architecture i386 \
+  && apt-get update  \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+  bash \
+  make \
+  openjdk-${JDK_VER}-jre-headless \
+  wine32 \
+  && rm -rf /var/lib/apt/lists/*
+
+# Create sgdk unprivileged user
+RUN useradd -ms /bin/sh -d /sgdk sgdk
+
+# Set-up SGDK
+# COPY . /sgdk
+ENV GDK=/sgdk
+ENV SGDK_DOCKER=y
+
+# Create wrappers to execute .exe files using wine
+RUN sed -i 's/\r$//' /sgdk/bin/create-bin-wrappers.sh && \  
+        chmod +x /sgdk/bin/create-bin-wrappers.sh
+        
+RUN /sgdk/bin/create-bin-wrappers.sh
+
+
+# Set-up mount point and make command
+VOLUME /workdir
+WORKDIR /workdir
+
+# workaround for the discovery of java path by VSCode
+RUN bash -l -c 'echo export PATH=/opt/m68k-toolchain/bin:/sgdk/bin:$PATH >> /etc/bash.bashrc'  
+RUN bash -l -c 'echo export JAVA_HOME=$(update-alternatives --query java | grep "Value: " | sed "s/Value: \(.*\)\/bin\/java/\1/") >> /etc/bash.bashrc'
+ADD settings.json /root/.local/share/code-server/User/settings.json
+
+# Non root
+#USER coder
+
+EXPOSE 8080
+CMD ["--bind-addr", "0.0.0.0:8080", "--auth", "none"]
