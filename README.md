@@ -2,6 +2,15 @@
 
 Genesis **I**ntegrated **D**evelopment **E**nvironment with [Visual Studio Code](https://code.visualstudio.com), [SGDK](https://github.com/Stephane-D/SGDK), [Gens](http://www.gens.me) and [Retroarch](https://www.retroarch.com)
 
+### How does it work
+
+```mermaid
+flowchart TD
+    A[fa:fa-code Visual Code] -->|Project into /workdir| B(SGDK)
+    B[fa:fa-hashtag SGDK] -->|makefile.gen /workdir| C[fa:fa-cog m68k-gcc]
+    C -->|out/rom.bin| D[fa:fa-gamepad Gens]
+```
+
 ### Prerequirement
 * Docker 23+
 
@@ -17,6 +26,7 @@ Then access
 Short cut
 
 F1 > Genesis Code: Compile Project
+
 F1 > Simple Browser: Show
 
 
