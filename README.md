@@ -1,23 +1,30 @@
 # Genesis IDE
 
-It's a Integrated Development Environment with VSCode + SGDK + Gens + Retroarch. 
+Genesis **I**ntegrated **D**evelopment **E**nvironment with VSCode + SGDK + Gens + Retroarch
+
+### Prerequirement
+* Docker 23+
 
 ### How to start
+
 ```shell
 docker compose up
 ```
 Then access
+
 [IDE](http://localhost:9090) | [Gens](http://localhost:9000) | [RetroArch](http://localhost:7070)
 
 
 ### Roadmap
 
+- [x] VSCode web with installed genesis extensions
+- [x] Web emulator: GenPlus + RetroArch
 - [ ] Gens KMode remote debug - https://gendev.spritesmind.net/page-gdb.html
-- [ ] genskmod - https://bitbucket.org/SpritesMind/genskmod
 
 
-### Extensions
+### References
 
-* [genesis-code](https://github.com/zerasul/genesis-code)
-* [vscode-c-cpp-runner](https://github.com/franneck94/vscode-c-cpp-runner)
-* [ms-vscode.live-server](https://github.com/microsoft/vscode-livepreview)
+* [vsix.genesis-code](https://github.com/zerasul/genesis-code)
+* [vsix.vscode-c-cpp-runner](https://github.com/franneck94/vscode-c-cpp-runner)
+* [vsix.ms-vscode.live-server](https://github.com/microsoft/vscode-livepreview)
+* [GensKMod](https://bitbucket.org/SpritesMind/genskmod)
