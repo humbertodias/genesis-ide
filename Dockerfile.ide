@@ -1,0 +1,111 @@
+FROM codercom/code-server:latest
+# bash as default
+SHELL ["/bin/bash", "-c"]
+ENV TZ=America/Sao_Paulo
+
+# root 
+USER root
+RUN apt update && apt install -y zip unzip curl jq netcat lsof socat npm \
+&& rm -rf /var/lib/apt/lists/* /tmp/*
+
+RUN chown -R coder:coder /opt \
+ && sudo adduser coder sudo \
+ && mkdir /opt/repository
+
+# Fix
+RUN cd /usr/lib/code-server \
+&& rm -rf node_modules/argon2 \
+&& npm install -g node-gyp \
+&& npm install argon2 argon2-cli \
+&& echo -n "password" | npx argon2-cli -d -e
+
+
+# Bash
+RUN echo "alias ll='ls -lha --color'" >> $HOME/.bash_aliases
+
+ADD fn.sh /
+
+# VSCode extensions
+ARG EXT_GENESIS_CODE_VERSION=1.4.2
+ARG EXT_C_CPP_RUNNER_VERSION=9.0.0
+ARG EXT_LIVE_PREVIEW_VERSION=0.4.9
+RUN source /fn.sh \
+&& install_vscode_extension zerasul genesis-code $EXT_GENESIS_CODE_VERSION \
+&& install_vscode_extension franneck94 c-cpp-runner $EXT_C_CPP_RUNNER_VERSION \
+&& install_vscode_extension ms-vscode live-server $EXT_LIVE_PREVIEW_VERSION
+
+# SGDK
+
+# Set-up argument defaults
+ARG JDK_VER=11
+
+# Install supporting packages
+RUN apt update  \
+  && DEBIAN_FRONTEND=noninteractive apt install -y \
+  bash \
+  make \
+  git \
+  babeltrace \
+  rsync \
+  bison gcc g++ lhasa libgmp-dev libmpfr-dev libmpc-dev flex gettext texinfo \
+  openjdk-${JDK_VER}-jre-headless \
+  && rm -rf /var/lib/apt/lists/*
+
+# install GCC 6.3
+
+RUN cd /opt \
+    && curl -O http://barelyconsciousgames.com/m68k-toolchain-rpi.tar.gz \
+    && tar xvzf m68k-toolchain-rpi.tar.gz \
+    && apt update \
+    && DEBIAN_FRONTEND=noninteractive apt install -y libc6-armhf-cross \
+    && ln -s /usr/arm-linux-gnueabihf/lib/ld-linux-armhf.so.3 /lib/ \
+    && ln -s /usr/arm-linux-gnueabihf/lib/libm.so.6 /lib \
+    && ln -s /usr/arm-linux-gnueabihf/lib/libc.so.6 /lib \
+    && ln -s /usr/arm-linux-gnueabihf/lib/libdl.so.2 /lib \
+    && rm m68k-toolchain-rpi.tar.gz
+
+ARG SGDK_VERSION=1.90
+RUN git clone https://github.com/Stephane-D/SGDK /sgdk \
+&& cd /sgdk \
+&& git checkout tags/v${SGDK_VERSION}
+
+# Create sgdk unprivileged user
+RUN useradd -ms /bin/sh -d /sgdk sgdk
+
+# Non root
+# USER sgdk
+
+# Set-up SGDK
+#COPY . /sgdk
+ENV GDK=/sgdk
+
+RUN cd /tmp \
+    && git clone https://github.com/istvan-v/sjasmep.git \
+    && cd sjasmep \
+    && make \
+    && mv sjasm /sgdk/bin
+
+ENV PATH="/opt/m68k-toolchain/bin:/sgdk/bin:${PATH}" 
+
+RUN cd /sgdk/tools/bintos \
+    && gcc -O2 -s src/bintos.c -o ../../bin/bintos
+
+RUN cd /sgdk/tools/xgmtool \
+    && gcc -fexpensive-optimizations -Os -s src/*.c -o ../../bin/xgmtool
+
+# Set-up mount point and make command
+VOLUME /workdir
+WORKDIR /workdir
+
+
+# workaround for the discovery of java path by VSCode
+RUN bash -l -c 'echo export PATH=/opt/m68k-toolchain/bin:/sgdk/bin:$PATH >> /etc/bash.bashrc'  
+RUN bash -l -c 'echo export JAVA_HOME=$(update-alternatives --query java | grep "Value: " | sed "s/Value: \(.*\)\/bin\/java/\1/") >> /etc/bash.bashrc'
+ADD settings.json $HOME/.local/share/code-server/User/settings.json
+
+# Non root
+#USER coder
+
+
+EXPOSE 8080 9090
+CMD ["--bind-addr", "0.0.0.0:9090"]
