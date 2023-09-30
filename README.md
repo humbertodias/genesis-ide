@@ -6,9 +6,11 @@ Genesis **I**ntegrated **D**evelopment **E**nvironment with [Visual Studio Code]
 
 ```mermaid
 flowchart TD
-    A[fa:fa-code Visual Code] -->|Project into /workdir| B(SGDK)
-    B[fa:fa-hashtag SGDK] -->|makefile.gen /workdir| C[fa:fa-cog m68k-gcc]
-    C -->|out/rom.bin| D[fa:fa-gamepad Gens]
+    A[fa:fa-user developer] -->|Idea/Implementation| B[fa:fa-code ide]
+    B -->|Project into /workdir| C[fa:fa-hashtag sgdk]
+    C -->|makefile.gen /workdir| D[fa:fa-gear m68k-gcc]
+    D -->|out/rom.bin| E[fa:fa-computer emulator]
+    F[fa:fa-gamepad player] -->|Game I/O| E
 ```
 
 ### Prerequirement
