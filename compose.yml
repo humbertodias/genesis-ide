@@ -7,8 +7,8 @@ services:
       context: ide
       # dockerfile: Dockerfile-m1
       args:
-        - SGDK_VERSION=1.90
-        - JDK_VER=11
+        - SGDK_VERSION=2.11
+        - JDK_VER=17
     ports:
       - 8080:8080
     working_dir: /workdir
@@ -31,7 +31,7 @@ services:
       context: retroarch
       args:
         - RETROARCH_TYPE=stable
-        - RETROARCH_VERSION=1.16.0
+        - RETROARCH_VERSION=1.21.0
     ports:
       - 8082:80
     restart: unless-stopped

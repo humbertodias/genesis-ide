@@ -5,7 +5,7 @@ ENV TZ=America/Sao_Paulo
 
 # root 
 USER root
-RUN apt update && apt install -y zip unzip curl jq netcat lsof socat npm \
+RUN apt update && apt install -y zip unzip curl jq netcat-traditional lsof socat npm \
 && rm -rf /var/lib/apt/lists/* /tmp/*
 
 RUN chown -R coder:coder /opt \
@@ -33,13 +33,13 @@ RUN source /fn.sh \
 && install_vscode_extension franneck94 c-cpp-runner $EXT_C_CPP_RUNNER_VERSION
 
 # SGDK
-ARG SGDK_VERSION=1.90
+ARG SGDK_VERSION=2.11
 RUN git clone https://github.com/Stephane-D/SGDK /sgdk \
 && cd /sgdk \
 && git checkout tags/v${SGDK_VERSION}
 
 # Set-up argument defaults
-ARG JDK_VER=11
+ARG JDK_VER=17
 
 # Install supporting packages
 RUN dpkg --add-architecture i386 \
@@ -60,10 +60,10 @@ ENV GDK=/sgdk
 ENV SGDK_DOCKER=y
 
 # Create wrappers to execute .exe files using wine
-RUN cd /sgdk/bin \ 
-&& sed -i 's/\r$//' create-bin-wrappers.sh \  
-&& chmod +x create-bin-wrappers.sh \
-&& ./create-bin-wrappers.sh
+# RUN cd /sgdk/bin \ 
+# && sed -i 's/\r$//' create-bin-wrappers.sh \  
+# && chmod +x create-bin-wrappers.sh \
+# && ./create-bin-wrappers.sh
 
 # Set-up mount point and make command
 VOLUME /workdir

@@ -5,7 +5,7 @@ ENV TZ=America/Sao_Paulo
 
 # root 
 USER root
-RUN apt update && apt install -y zip unzip curl jq netcat lsof socat npm \
+RUN apt update && apt install -y zip unzip curl jq netcat-traditional lsof socat npm \
 && rm -rf /var/lib/apt/lists/* /tmp/*
 
 RUN chown -R coder:coder /opt \
@@ -35,7 +35,7 @@ RUN source /fn.sh \
 # SGDK
 
 # Set-up argument defaults
-ARG JDK_VER=11
+ARG JDK_VER=17
 
 # Install supporting packages
 RUN apt update  \
@@ -61,7 +61,7 @@ RUN cd /opt \
     && ln -s /usr/arm-linux-gnueabihf/lib/libdl.so.2 /lib \
     && rm m68k-toolchain-rpi.tar.gz
 
-ARG SGDK_VERSION=1.90
+ARG SGDK_VERSION=2.11
 RUN git clone https://github.com/Stephane-D/SGDK /sgdk \
 && cd /sgdk \
 && git checkout tags/v${SGDK_VERSION}
